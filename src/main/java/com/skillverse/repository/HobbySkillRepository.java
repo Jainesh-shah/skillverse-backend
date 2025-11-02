@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface HobbySkillRepository extends JpaRepository<HobbySkill, Integer> {
     List<HobbySkill> findByHobby_HobbyId(Integer hobbyId);
+
+
 }

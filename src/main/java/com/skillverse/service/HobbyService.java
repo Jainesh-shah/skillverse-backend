@@ -52,6 +52,19 @@ public class HobbyService {
         );
     }
 
+    public List<HobbySkillDTO> getAllSkills() {
+        return hobbySkillRepository.findAll().stream()
+                .map(skill -> new HobbySkillDTO(
+                        skill.getSkillId(),
+                        skill.getSkillName(),
+                        skill.getDescription(),
+                        skill.getIsCustom(),
+                        skill.getHobby() != null ? skill.getHobby().getHobbyId() : null,
+                        skill.getHobby() != null ? skill.getHobby().getHobbyName() : null
+                ))
+                .collect(Collectors.toList());
+    }
+
     public List<HobbySkillDTO> getSkillsByHobby(Integer hobbyId) {
         return hobbySkillRepository.findByHobby_HobbyId(hobbyId).stream()
                 .map(skill -> new HobbySkillDTO(
@@ -90,4 +103,6 @@ public class HobbyService {
                 saved.getHobby() != null ? saved.getHobby().getHobbyName() : null
         );
     }
+
+    
 }

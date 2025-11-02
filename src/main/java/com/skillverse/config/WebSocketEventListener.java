@@ -1,36 +1,49 @@
 package com.skillverse.config;
 
-import com.skillverse.service.WebRTCSignalingService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 @Component
-@Slf4j
 public class WebSocketEventListener {
 
-    @Autowired
-    private WebRTCSignalingService signalingService;
+        private static final Logger log = LoggerFactory.getLogger(WebSocketEventListener.class);
+
 
     @EventListener
-    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
-        log.info("WebSocket connection established. Session ID: {}", sessionId);
-    }
+public void handleWebSocketConnectListener(SessionConnectEvent event) {
+    StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+    String sessionId = headerAccessor.getSessionId();
+    String user = headerAccessor.getNativeHeader("Authorization") != null
+        ? headerAccessor.getNativeHeader("Authorization").get(0)
+        : "Anonymous";
+
+    log.info("WebSocket CONNECT event - Session: {}, Auth: {}", sessionId, user);
+}
+
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
+        System.out.println("WebSocket Disconnected - Session ID: " + sessionId);
+    }
+
+    @EventListener
+    public void handleSubscribeEvent(SessionSubscribeEvent event) {
+        StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(
+            event.getMessage(), StompHeaderAccessor.class);
         
-        log.info("WebSocket connection closed. Session ID: {}", sessionId);
+        String destination = headerAccessor.getDestination();
+        String sessionId = headerAccessor.getSessionId();
         
-        // Cleanup peer from rooms
-        signalingService.handleDisconnect(sessionId);
+        System.out.println("WebSocket Subscription - Session: " + sessionId + ", Destination: " + destination);
     }
 }

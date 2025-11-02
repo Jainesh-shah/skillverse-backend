@@ -125,4 +125,10 @@ public class CourseController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @GetMapping("/search/creator")
+public ResponseEntity<List<CourseResponse>> searchCoursesByCreator(@RequestParam String keyword) {
+    return ResponseEntity.ok(courseService.searchCoursesByCreator(keyword));
+}
+
 }

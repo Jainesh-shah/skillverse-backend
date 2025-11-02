@@ -39,4 +39,6 @@ public class SkillController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
+
+    
 }

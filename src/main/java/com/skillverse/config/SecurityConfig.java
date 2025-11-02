@@ -41,11 +41,18 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/public/**").permitAll()
-                .requestMatchers("/ws/**").permitAll()        // ✅ allow WebSocket endpoints
+                .requestMatchers("/ws/**").permitAll() 
+                .requestMatchers(
+                    "/ws/**", 
+                    "/ws-native/**", 
+                    "/ws/signaling/**", 
+                    "/ws/info/**"
+                ).permitAll()
                 .requestMatchers("/courses/public/**").permitAll()
                 .requestMatchers("/hobbies/**").permitAll()
                 .requestMatchers("/skills/**").permitAll()
                 .requestMatchers("/error").permitAll()
+                .requestMatchers("/api/payment/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

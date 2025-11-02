@@ -9,6 +9,17 @@ import java.util.List;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Integer> {
-    @Query("SELECT c FROM Chat c WHERE (c.sender.userId = :userId1 AND c.receiver.userId = :userId2) OR (c.sender.userId = :userId2 AND c.receiver.userId = :userId1) ORDER BY c.sentAt ASC")
-    List<Chat> findChatBetweenUsers(@Param("userId1") Integer userId1, @Param("userId2") Integer userId2);
+    
+    @Query("SELECT c FROM Chat c WHERE " +
+           "(c.sender.userId = :userId1 AND c.receiver.userId = :userId2) OR " +
+           "(c.sender.userId = :userId2 AND c.receiver.userId = :userId1) " +
+           "ORDER BY c.sentAt ASC")
+    List<Chat> findChatBetweenUsers(@Param("userId1") Integer userId1, 
+                                     @Param("userId2") Integer userId2);
+    
+    @Query("SELECT DISTINCT CASE " +
+           "WHEN c.sender.userId = :userId THEN c.receiver " +
+           "ELSE c.sender END " +
+           "FROM Chat c WHERE c.sender.userId = :userId OR c.receiver.userId = :userId")
+    List<com.skillverse.model.User> findUsersWithChatHistory(@Param("userId") Integer userId);
 }

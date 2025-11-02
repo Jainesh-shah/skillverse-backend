@@ -174,4 +174,11 @@ public class CourseService {
         
         return response;
     }
+
+    public List<CourseResponse> searchCoursesByCreator(String keyword) {
+    return courseRepository.searchCoursesByCreator(keyword).stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+}
+
 }
